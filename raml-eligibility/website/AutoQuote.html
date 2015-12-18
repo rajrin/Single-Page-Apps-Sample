@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+ 
+<html>
+
+
+<head>
+ <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+
+<script>
+$.ajaxSetup({ cache: false });
+	$(document).ready(function() {
+		$("#resetButton").click(function() {
+				// $("#id").text(data.id);
+				$("#origin").text("");
+				$("#fname").text("");
+				$("#lname").text("");
+				$("#mname").text("");
+				$("#gender").text("");
+				$("#age").text("");
+				$("#state").text("");
+				$("#productList").empty();
+				$("#result").css('display', 'inline');
+		});
+
+		$("#retrieveButton").click(function() {
+//			$.get("https://api.apim.ibmcloud.com/sudhakar-bellams-company/sb/aquote/aquote/get/" + $("#quote_id_text").val() + "?client_id=" + $("#client_id_text").val(), function(data, status) {
+			$.get("http://acmeautoinsurance.cloudhub.io/api/v1/quote/" + $("#quote_id_text").val() + "?client_id=" + $("#client_id_text").val(), function(data, status) {
+
+				$("#id").text(data.id);
+				$("#origin").text(data.origin);
+				$("#fname").text(data.insured.fname);
+				$("#lname").text(data.insured.lname);
+				$("#mname").text(data.insured.mname);
+				$("#gender").text(data.insured.gender);
+				$("#age").text(data.insured.age);
+				$("#state").text(data.insured.stateCode);
+				$("#productList").empty();
+				$.each(data.products, function(idx, obj) {
+					//$("#productList").append( "Product " + (idx + 1));
+					$("#productList").append("<b>"+obj.name +"</b> offers deductible=$"+obj.deductible)
+					$("#productList").append("<table width='80%' border='1'><tr><td>Collision</td><td>" + obj.collision + "</td><tr><td>Deductible</td><td>" + obj.deductible + "</td><tr><td>Liability</td><td>" + obj.liability + "</td><tr><td>Name</td><td>" + obj.name + "</td></table>");
+					$("#productList").append("<br>");
+				});
+
+
+
+				$("#result").css('display', 'inline');
+			}).fail(function(jqXHR, textStatus, errorThrown) {
+				alert(jqXHR.responseText);
+			});
+		});
+
+		$("#saveQuote").click(function() {
+			var postData = "{\"Originator\":\"" + $("#originatorText").val() + "\",\"insured\":{\"age\":" + $("#ageText").val() + ",\"fname\":\"" + $("#fnameText").val() + "\",\"gender\":\"" + $("#genderText").val() + "\",\"lname\":\"" + $("#lnameText").val() + "\",\"mname\":\"" + $("#mnameText").val() + "\",\"stateCode\":\"" + $("#stateText").val() + "\"},\"vehicle\":{\"make\":\"" + $("#makeText").val() + "\",\"model\":\"" + $("#modelText").val() + "\",\"vin\":\"" + $("#vinText").val() + "\",\"year\":" + $("#yearText").val() + "}}";
+			$.ajax({
+				// url : "https://api.apim.ibmcloud.com/sudhakar-bellams-company/sb/aquote/aquote/create?client_id=" + $("#client_id_text").val(),
+				url : "http://acmeautoinsurance.cloudhub.io/api/v1/quote?client_id=" + $("#client_id_text").val(),
+
+				type : "POST",
+				headers : {
+					"Accept" : "application/json; charset=utf-8",
+					"Content-Type" : "application/json; charset=utf-8"
+				},
+				data : postData,
+				dataType : "json",
+				success : function(data) {
+					$("#id").text(data.id);
+					$("#origin").text(data.origin);
+					$("#fname").text(data.insured.fname);
+					$("#lname").text(data.insured.lname);
+					$("#mname").text(data.insured.mname);
+					$("#gender").text(data.insured.gender);
+					$("#age").text(data.insured.age);
+					$("#state").text(data.insured.stateCode);
+					$("#productList").empty();
+					$.each(data.products, function(idx, obj) {
+						$("#productList").append("Product " + (idx + 1));
+						$("#productList").append("<table><tr><td>Collision</td><td>" + obj.collision + "</td><tr><td>Deductible</td><td>" + obj.deductible + "</td><tr><td>Liability</td><td>" + obj.liability + "</td><tr><td>Name</td><td>" + obj.name + "</td></table>");
+					});
+					$("#result").css('display', 'inline');
+					$("#formDiv").css('display', 'none');
+				},
+				error : function(ajaxContext) {
+					alert(ajaxContext.responseText)
+				}
+			});
+		});
+		$("#saveQuoteLink").click(function() {
+			$("#result").css('display', 'none');
+			$("#formDiv").css('display', 'inline');
+		});
+		$("#retrieveQuoteLink").click(function() {
+			$("#result").css('display', 'none');
+		});
+	}); 
+</script>
+
+<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script>
+	$(function() {
+		$("#tabs").tabs();
+	}); 
+</script>
+
+<style>
+	#tabs-1 {
+		font-size: 14px;
+	}
+	.ui-widget-header {
+		background: #b9cd6d;
+		border: 1px solid #b9cd6d;
+		color: #FFFFFF;
+		font-weight: bold;
+	}
+	#tabs-2 {
+		font-size: 14px;
+	}
+	.ui-widget-header {
+		background: #b9cd6d;
+		border: 1px solid #b9cd6d;
+		color: #FFFFFF;
+		font-weight: bold;
+	}
+</style>
+</head>
+<body>
+	<table>
+		<tr>
+			<td><img src=acme-life-med.png /></td>
+			<td>	<h2>Auto Quote API - Demo</h2> 	<label>Client Id</label>
+	<input id="client_id_text" />
+			<!-- IBM
+                     <br><br><a href=https://developer.apim.ibmcloud.com/sudhakar-bellams-company/sb>Developer portal</a>
+				<br><br><a href=http://editor.swagger.io/#/>Swagger</a>
+			-->
+				<br><br><a href=http://acmeautoinsurance.cloudhub.io/api/v1-console/>Console</a>
+				<br><br><a href=https://anypoint.mulesoft.com/apiplatform/acmelife/#/portals>Developer Portal</a>
+
+                </td>
+
+			<td><img src=demo-flow-mulesoft.png></td>
+		</tr>
+     </table>
+     
+<!--
+	<label>Client Id</label>
+	<input id="client_id_text" />
+-->
+	<br>
+	<div id="tabs">
+		<ul>
+			<li><a id="retrieveQuoteLink" href="#tabs-1">Retrieve Quote</a></li>
+			<li><a id="saveQuoteLink" href="#tabs-2">Create Auto Quote</a></li>
+		
+
+		</ul>
+		<div id="tabs-1">
+			<label>Quote Id</label> <input id="quote_id_text" />
+			<button id="retrieveButton">Retrieve</button>
+			<button id="resetButton">Reset</button>
+		</div>
+		<div id="tabs-2">
+			<div id="formDiv">
+				<table >
+					<tr>
+						<td>Originator</td>
+						<td><input id="originatorText"></input></td>
+					</tr>
+				</table>
+<table width=100%>
+  <tr>
+    <td width=33%>
+
+				<h3>Insured Details</h3>
+				<table >
+					<tr>
+						<td>First Name</td>
+						<td><input id="fnameText"></input></td>
+					</tr>
+					<tr>
+						<td>Middle Name</td>
+						<td><input id="mnameText"></input></td>
+					</tr>
+					<tr>
+						<td>Last Name</td>
+						<td><input id="lnameText"></input></td>
+					</tr>
+					<tr>
+						<td>Age</td>
+						<td><input id="ageText"></input></td>
+					</tr>
+					<tr>
+						<td>Gender</td>
+						<td><input id="genderText"></input></td>
+					</tr>
+					<tr>
+						<td>State</td>
+						<td><input id="stateText"></input></td>
+					</tr>
+				</table>
+  </td><td width=33%>
+				<h3>Vehichle Details</h3>
+				<table>
+					<tr>
+						<td>Vehichle</td>
+						<td><input id="vehichleText"></input></td>
+					</tr>
+					<tr>
+						<td>Make</td>
+						<td><input id="makeText"></input></td>
+					</tr>
+					<tr>
+						<td>Model</td>
+						<td><input id="modelText"></input></td>
+					</tr>
+					<tr>
+						<td>Vin</td>
+						<td><input id="vinText"></input></td>
+					</tr>
+					<tr>
+						<td>Year</td>
+						<td><input id="yearText"></input></td>
+					</tr>
+					
+				</table>
+     </td><td><button id="saveQuote">Create Quote</button>
+   </td></tr></table>
+			</div
+		</div>
+	</div>
+	<div id="result" style="display: none;">
+				<h3>Quote Details</h3>
+				<table>
+					<tr>
+						<td>Id</td>
+						<td><label id="id"></input></td>
+					</tr>
+					<tr>
+						<td>Origin</td>
+						<td><label id="origin"></input></td>
+					</tr>
+				</table>
+				<h3>Insured Details</h3>
+				<table width='80%' border='1'>
+					<tr>
+						<td>First Name</td>
+						<td><label id="fname"></input></td>
+					</tr>
+					<tr>
+						<td>Middle Name</td>
+						<td><label id="mname"></input></td>
+					</tr>
+					<tr>
+						<td>Last Name</td>
+						<td><label id="lname"></input></td>
+					</tr>
+					<tr>
+						<td>Age</td>
+						<td><label id="age"></input></td>
+					</tr>
+					<tr>
+						<td>Gender</td>
+						<td><label id="gender"></input></td>
+					</tr>
+					<tr>
+						<td>State</td>
+						<td><label id="state"></input></td>
+					</tr>
+				</table>
+				<h3>Product Details</h3>
+				<div id="productList"></div>
+			</div>
+</body>
+</html>

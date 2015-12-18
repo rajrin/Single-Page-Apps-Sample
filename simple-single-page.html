@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-meta name="viewport" content="width=device-width, initial-scale=1"-->
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+ <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+ <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+ <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+<style>
+#map-page, #map-canvas { width: 100%; height: 100%; padding: 0; }
+</style>
+
+<script>
+
+$(document).ready(function(){	
+	$("#searchEligibility").click(function(){		
+		$.ajax({	        
+	        url: "https://api.apim.ibmcloud.com/sudhakar-bellams-company/sb/v14/eligibility?client_id=9f63426a-8445-4e02-b87b-95a5c56121e0",
+	        crossDomain: true,
+	        type: "GET",
+	        cache : false,	       
+            jsonp:"callback",
+	        success: function (data) {	        	
+	        	jQuery("label[for='groupNumber']").html(data.primaryCoverage.groupNumber);
+	        	jQuery("label[for='groupName']").html(data.primaryCoverage.groupName);
+	        	jQuery("label[for='healthPlan']").html(data.primaryCoverage.healthPlan);
+	        	jQuery("label[for='termDat']").html(data.primaryCoverage.termDate);
+	        	jQuery("label[for='copay']").html(data.primaryCoverage.copay);
+	        	jQuery("label[for='deductible']").html(data.primaryCoverage.deductible);
+	        	
+	        	jQuery("label[for='groupNumberSec']").html(data.secondaryCoverage.groupNumber);
+	        	jQuery("label[for='groupNameSec']").html(data.secondaryCoverage.groupName);
+	        	jQuery("label[for='healthPlanSec']").html(data.secondaryCoverage.healthPlan);
+	        	jQuery("label[for='termDatSec']").html(data.secondaryCoverage.termDate);
+	        	jQuery("label[for='copaySec']").html(data.secondaryCoverage.copay);
+	        	jQuery("label[for='deductibleSec']").html(data.secondaryCoverage.deductible);
+	        	
+	        	jQuery("label[for='street1']").html(data.demographics.address.street1);
+	        	jQuery("label[for='street2']").html(data.demographics.address.street2);
+	        	jQuery("label[for='city']").html(data.demographics.address.city);
+	        	jQuery("label[for='state']").html(data.demographics.address.state);
+	        	jQuery("label[for='zip']").html(data.demographics.address.zip);
+	        	jQuery("label[for='phone']").html(data.demographics.phone);
+	        	jQuery("label[for='gender']").html(data.demographics.gender);
+	        	jQuery("label[for='dob']").html(data.demographics.dob);
+	        	
+	        	jQuery("label[for='pcpName']").html('');
+	        	jQuery("label[for='pcpLocation']").html('');
+	        	jQuery("label[for='pcpEffectiveDate']").html('');
+	        	jQuery("label[for='officeNum']").html('');	        	
+	        },
+	        error: function (xhr, status) {
+                alert(status);
+	        }
+	    });		
+	});	  
+});
+</script>
+</head>
+<body>
+
+	<div data-role="page" id="pageOne">
+		<div data-role="header">
+			<h3>ANSI Eligibility and Benefits Inquiry </h3>
+		</div>
+		<div data-role="main" class="ui-content">
+			<form method="post" action="demoform.asp">
+				<label for="memberId" id="lb_member_id">Member Id:</label>
+				<input type="text" name="memberId" id="memberId" placeholder="Member Id">
+				<label for="firstName" id="lb_fname">First Name</label>
+				<input type="text" name="firstName" id="firstName" placeholder="First Name">
+				<label for="lastName" id="lb_lname">Last Name</label>
+				<input type="text" name="firstName" id="firstName" placeholder="First Name">
+				<label for="dob" id="lb_dob">Date Of Birth:</label>
+				<input type="date" name="dob" id="dob">
+		
+				<a data-role="button" id="searchEligibility" href="#pageTwo" class="ui-btn ui-icon-search ui-btn-icon-left">Search Eligibility</a>
+
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<div data-role="page" id="pageTwo">
+		<div data-role="header">
+			<h3>Result</h3>
+		</div>
+		<div>
+			<h3 id="reference" name="reference" class="heading-reference">Primary Group Health Coverage</h3>
+			<table>
+				<tr>
+					<td>
+						<label for="groupNumberLbl">Group Number: </label>
+					</td>
+					<td>
+						<label for="groupNumber"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="groupNameLbl">Group Name: </label>
+					</td>
+					<td>
+						<label for="groupName"/>
+					</td>
+				</tr>
+								<tr>
+					<td>
+						<label for="healthPlanLbl">Health Plan: </label>
+					</td>
+					<td>
+						<label for="healthPlan"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="termDatLbl">Term: </label>
+					</td>
+					<td>
+						<label for="termDat"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="copayLbl">Copay: </label>
+					</td>
+					<td>
+						<label for="copay"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="deductibleLbl">Deductible: </label>
+					</td>
+					<td>
+						<label for="deductible"/>
+					</td>
+				</tr>
+			</table>
+			</div>
+			
+					<div>
+			<h3 id="reference" name="reference" class="heading-reference">Secondary Group Health Coverage</h3>
+			<table>
+				<tr>
+					<td>
+						<label for="groupNumberSecLbl">Group Number: </label>
+					</td>
+					<td>
+						<label for="groupNumberSec"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="groupNameSecLbl">Group Name: </label>
+					</td>
+					<td>
+						<label for="groupNameSec"/>
+					</td>
+				</tr>
+								<tr>
+					<td>
+						<label for="healthPlanSecLbl">Health Plan: </label>
+					</td>
+					<td>
+						<label for="healthPlanSec"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="termDatSecLbl">Term: </label>
+					</td>
+					<td>
+						<label for="termDatSec"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="copaySecLbl">Copay: </label>
+					</td>
+					<td>
+						<label for="copaySec"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="deductibleSecLbl">Deductible: </label>
+					</td>
+					<td>
+						<label for="deductibleSec"/>
+					</td>
+				</tr>
+			</table>
+			</div>
+			
+			
+			
+
+			<div>
+			<h3 id="reference" name="reference" class="heading-reference">Member Demographic Information</h3>
+			<table>
+				<tr>
+					<td>
+						<label for="addressLbl">Address:</label>
+					</td>
+					<td>
+						<label for="street1"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+					<td>
+						<label for="street2"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+					<td>
+						<label for="city"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+					<td>
+						<label for="state"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+					<td>
+						<label for="zip"/>
+					</td>
+				</tr>	
+				
+				
+				
+				<tr>
+					<td>
+						<label for="phoneLbl">Phone:</label>
+					</td>
+					<td>
+						<label for="phone"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="genderLbl">Gender:</label>
+					</td>
+					<td>
+						<label for="gender"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="dobLbl">DOB: </label>
+					</td>
+					<td>
+						<label for="dob"/>
+					</td>
+				</tr>
+				</table>	
+			</div>
+		
+			<div>
+			<h3 id="reference" name="reference" class="heading-reference">PCP information</h3>
+			<table>
+				<tr>
+					<td>
+						<label for="pcpNameLbl">Name: </label>
+					</td>
+					<td>
+						<label for="pcpName"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="pcpLocationLbl">Location: </label>
+					</td>
+					<td>
+						<label for="pcpLocation"/>
+					</td>
+				</tr>
+								<tr>
+					<td>
+						<label for="pcpEffectiveDateLbl">Effective Date: </label>
+					</td>
+					<td>
+						<label for="pcpEffectiveDate"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="officeNumLbl">office #: </label>
+					</td>
+					<td>
+						<label for="officeNum"/>
+					</td>
+				</tr>
+				
+			</table>
+			
+			</div>
+			<a data-role="button" class="ui-btn" data-rel="back">Back</a>
+		
+			</form>
+		</div>
+	</div>
+	
+</body>
+</html>

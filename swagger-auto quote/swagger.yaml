@@ -1,0 +1,218 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Auto Quote Example
+  description: This is a demonstration of how Swagger is used for modelling the API. We are creating a quote API that is exposed to the aggregators. The schema/messages used in this example are assumed to be driven by the provider and is not using any standard such as ACORD.
+# during dev, should point to your local machine
+host: rajeevsakhuja-test.apigee.com
+# basePath prefixes all resource paths 
+basePath: /v1
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+x-a127-config: {}
+x-a127-services: {}
+paths:
+  /quote:
+    x-swagger-router-controller: quote
+    x-a127-apply: {}
+    post:
+      description: |
+                    Creates an auto quote and send back a response that provides the caller the quote information.
+      operationId: createQuote
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - auto
+        - quote
+        - create
+      parameters:
+        - in : body
+          name: body
+          schema:
+            $ref : "#/definitions/QuoteRequest"
+          description : This is the quote request object that needs to be sent in the body
+          required : true
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref : "#/definitions/QuoteResponse"
+        "401":
+          description : invalid vehicle parameters
+          schema:
+            $ref : "#/definitions/ValidationError"
+        "402":
+          description : invalid/missing insured age or statecode
+          schema:
+            $ref : "#/definitions/ValidationError"
+    ## Retrieve the previously created quote
+  /quote/{id}:
+    x-swagger-router-controller: quote
+    get:
+      operationId : getQuoteById
+      description : Retrieve the previously created quote
+      tags :
+        - quote
+        - Retrieve
+      parameters:
+      - name: id
+        in : path
+        required : true
+        type : string
+        description : Id of the previously created quote
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref : "#/definitions/QuoteResponse"
+        "404":
+          description : Quote note found
+          schema:
+            $ref : "#/definitions/ValidationError"
+        default :
+          description: This is generic error response
+          schema:
+            $ref : "#/definitions/QuoteResponse"
+  /hello:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: hello_world
+    x-a127-apply: {}
+    get:
+      description: Returns 'Hello' to the caller
+      # used as the method name of the controller
+      operationId: hello
+      parameters:
+        - name: body
+          in: body
+          description: The name of the person to whom to say hello
+          required: true
+          schema:
+            $ref : "#/definitions/Insured"
+          
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/HelloWorldResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+# complex objects have schema definitions
+definitions:
+  HelloWorldResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  ## Schema for the insured
+  Insured:
+    required:
+      - age
+      - stateCode
+    properties:
+      fname:
+        type: string
+        description: First Name of the insured
+      mname:
+        type: string
+        description: Middle name of the insured
+      lname: 
+        type : string
+        description: Last name of the insured
+      gender:
+        type: string
+        description : f=female, m=male
+      age:
+        type: integer
+        description : age of the insured
+      stateCode:
+        type: string
+        description: State of residence
+  ## Vehicle information
+  Vehicle:
+    properties:
+      vin:
+        type: string
+      make:
+        type: string
+      model:
+        type: string
+      year:
+        type: integer
+    ## Auto products
+  AutoProduct:
+    properties:
+      name:
+        type : string
+      deductible:
+        type:  integer
+      liability:
+        type:  integer
+        description: Liability maximum coverage amount
+      collision:
+        type:  integer
+        description: Collision maximum coverage amount
+    ## Quote object
+  Quote:
+    properties:
+      id:
+        type: string
+        description: Id assigned to the quote object
+      insured:
+          $ref : "#/definitions/Insured"
+      origin:
+        type: string
+        description: Originator ID - requestor
+      products:
+        type: array
+        items: 
+          $ref : "#/definitions/AutoProduct"
+    ## Schema for the quote request
+  QuoteRequest:
+    properties:
+      insured:
+        $ref : "#/definitions/Insured"
+      vehicle:
+        $ref : "#/definitions/Vehicle"
+      Originator:
+        type: string
+        description: Identity of the origin
+  ## Response for the Quote
+  QuoteResponse:
+    properties:
+      validTill:
+        type: string
+        format: date
+        description: When will th this quote expire
+      quote:
+        $ref : "#/definitions/Quote"
+  ValidationError:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string  
